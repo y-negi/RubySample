@@ -78,9 +78,19 @@ class RubyLabel: UILabel {
     }
     
     override var intrinsicContentSize: CGSize {
-        let baseSize = super.intrinsicContentSize
+        let displayText: String = {
+            if let unwrapText = self.text {
+                return unwrapText
+            }
+            if let unwrapAttributedText = self.attributedText {
+                return unwrapAttributedText.string
+            }
+            
+            return ""
+        }()
+        let baseSize = displayText.removeRubyString().size(withAttributes: [.font: self.font])
         // ルビの分の高さを追加する
-        let rubySize = CGSize(width: baseSize.width, height: baseSize.height * 1.5 + (self.font.pointSize * 0.75) / 2)
+        let rubySize = CGSize(width: baseSize.width, height: baseSize.height + (self.font.pointSize * 0.75) / 2)
         
         // ルビがある場合はルビの高さを追加したrectを返す
         if !self.isUseRuby {
